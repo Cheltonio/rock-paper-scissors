@@ -9,23 +9,50 @@ let computerScore = 0;
 let state = "playing";
 let message = "Click to lock in selection";
 
+// Classifier Variable
+let classifier;
+// Model URL
+let imageModelURL = 'https://teachablemachine.withgoogle.com/models/Nba1DGv5v/';
+
+// Video
+let video;
+let flippedVideo;
+// To store the classification
+let label = "";
+
+// Load the model first
+function preload() {
+  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
+}
+
 function setup() {
     createCanvas(640, 240);
+
+    // Create the video
+    video = createCapture(VIDEO);
+    video.size(320, 240);
+    video.hide();
+
+    flippedVideo = ml5.flipImage(video);
+    // Start classifying
+    classifyVideo();
 }
 
 function draw() {
     background(222);
+    // Draw the video
+    image(flippedVideo, 0, 0);
 
     // only update move if currently playing
     if (state == "playing") {
         // updates player move based on key press
-        if (keyIsDown(82)) {
+        if (label="rock") {
             // R key pressed
             playerMove = "rock";
-        } else if (keyIsDown(80)) {
+        } else if (label="paper") {
             // P key pressed
             playerMove = "paper";
-        } else if (keyIsDown(83)) {
+        } else if (label="scissors") {
             // S key pressed
             playerMove = "scissors";
         }
@@ -112,3 +139,25 @@ function getMoveEmoji(move) {
         return "invalid move";
     }
 }
+
+// Get a prediction for the current video frame
+function classifyVideo() {
+    flippedVideo = ml5.flipImage(video)
+    classifier.classify(flippedVideo, gotResult);
+    flippedVideo.remove();
+
+  }
+
+  // When we get a result
+  function gotResult(error, results) {
+    // If there is an error
+    if (error) {
+      console.error(error);
+      return;
+    }
+    // The results are in an array ordered by confidence.
+    // console.log(results[0]);
+    label = results[0].label;
+    // Classifiy again!
+    classifyVideo();
+  }
