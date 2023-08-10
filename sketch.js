@@ -46,13 +46,13 @@ function draw() {
     // only update move if currently playing
     if (state == "playing") {
         // updates player move based on key press
-        if (label="rock") {
+        if (label=="rock") {
             // R key pressed
             playerMove = "rock";
-        } else if (label="paper") {
+        } else if (label=="paper") {
             // P key pressed
             playerMove = "paper";
-        } else if (label="scissors") {
+        } else if (label=="scissors") {
             // S key pressed
             playerMove = "scissors";
         }
